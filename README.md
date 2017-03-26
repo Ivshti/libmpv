@@ -5,6 +5,13 @@ libmpv headers and linking libraries
 Linking libraries are only provided for `win32`, and `win32-x64` will be added. For other operating systems, use `pkg-config` and system-wide libmpv
 
 
+## VERSION
+
+The `.lib` files for Windows are updated from those builds:
+
+https://mpv.srsfckn.biz/mpv-dev-20170212.7z
+
+
 ## Windows - how to generate `mpv.lib`
 
 This `mpv.lib` for Windows was generated using the instructions on [MPV's wiki](https://github.com/mpv-player/mpv/blob/master/DOCS/compile-windows.md#linking-libmpv-with-msvc-programs) from the [srsfckn MPV windows builds](https://mpv.srsfckn.biz) Dev package. 
