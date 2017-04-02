@@ -31,3 +31,10 @@ CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64
 lib /def:mpv.def /name:mpv-1.dll /out:mpv.lib /MACHINE:X64
 ```
 
+
+
+## Mac
+
+The files in `lib/` are taken from the brew build of `libmpv`, 0.24.0 version in particular. The reason to use particular dylibs commited to the repo is to ensure we have consistency, since we take the include files from here either way.
+
+It also ensures we have a consistency in versions (0.24.0) 
