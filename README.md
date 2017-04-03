@@ -38,3 +38,18 @@ lib /def:mpv.def /name:mpv-1.dll /out:mpv.lib /MACHINE:X64
 The files in `lib/` are taken from the brew build of `libmpv`, 0.24.0 version in particular. The reason to use particular dylibs commited to the repo is to ensure we have consistency, since we take the include files from here either way.
 
 It also ensures we have a consistency in versions (0.24.0) 
+
+### Fix `rpath` if you copy files
+
+When you copy files from system deps, you can do something like that to fix `rpath` 
+
+```
+find $1/*.dylib | while read LINE
+do
+    otool -l "$LINE" | grep "name " | grep "/usr/local/Cellar" | cut -d " " -f11 | while read LIB
+    do
+                echo "$LINE -> $LIB"
+        install_name_tool -change "$LIB" "@executable_path/../Frameworks/$(basename $LIB)" $LINE
+    done
+done
+```
