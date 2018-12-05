@@ -1,4 +1,6 @@
-/* Permission to use, copy, modify, and/or distribute this software for any
+/* Copyright (C) 2017 the mpv developers
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
  *
@@ -11,6 +13,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifndef MPV_CLIENT_API_QTHELPER_H_
+#define MPV_CLIENT_API_QTHELPER_H_
+
+#include <mpv/client.h>
+
 /**
  * Note: these helpers are provided for convenience for C++/Qt applications.
  * This is based on the public API in client.h, and it does not encode any
@@ -18,9 +25,6 @@
  * can even copy and modify this code as you like, or implement similar things
  * for other languages.
  */
-
-#ifndef MPV_CLIENT_API_QTHELPER_H_
-#define MPV_CLIENT_API_QTHELPER_H_
 
 #include <cstring>
 
@@ -30,8 +34,6 @@
 #include <QHash>
 #include <QSharedPointer>
 #include <QMetaType>
-
-#include <mpv/client.h>
 
 namespace mpv {
 namespace qt {
@@ -224,6 +226,8 @@ struct node_autofree {
     ~node_autofree() { mpv_free_node_contents(ptr); }
 };
 
+#if MPV_ENABLE_DEPRECATED
+
 /**
  * Return the given property as mpv_node converted to QVariant, or QVariant()
  * on error.
@@ -280,6 +284,8 @@ static inline QVariant command_variant(mpv_handle *ctx, const QVariant &args)
     node_autofree f(&res);
     return node_to_variant(&res);
 }
+
+#endif
 
 /**
  * This is used to return error codes wrapped in QVariant for functions which
