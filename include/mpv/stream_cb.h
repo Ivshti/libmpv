@@ -1,4 +1,6 @@
-/* Permission to use, copy, modify, and/or distribute this software for any
+/* Copyright (C) 2017 the mpv developers
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
  *
@@ -9,16 +11,6 @@
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
-/*
- * Note: the client API is licensed under ISC (see above) to ease
- * interoperability with other licenses. But keep in mind that the
- * mpv core is still mostly GPLv2+. It's up to lawyers to decide
- * whether applications using this API are affected by the GPL.
- * One argument against this is that proprietary applications
- * using mplayer in slave mode is apparently tolerated, and this
- * API is basically equivalent to slave mode.
  */
 
 #ifndef MPV_CLIENT_API_STREAM_CB_H_
@@ -54,7 +46,9 @@ extern "C" {
  * stream callbacks.
  *
  * Note that your custom callbacks must not invoke libmpv APIs as that would
- * cause a deadlock.
+ * cause a deadlock. (Unless you call a different mpv_handle than the one the
+ * callback was registered for, and the mpv_handles refer to different mpv
+ * instances.)
  *
  * Stream lifetime
  * ---------------
@@ -97,7 +91,7 @@ extern "C" {
  * Read callback used to implement a custom stream. The semantics of the
  * callback match read(2) in blocking mode. Short reads are allowed (you can
  * return less bytes than requested, and libmpv will retry reading the rest
- * with a nother call). If no data can be immediately read, the callback must
+ * with another call). If no data can be immediately read, the callback must
  * block until there is new data. A return of 0 will be interpreted as final
  * EOF, although libmpv might retry the read, or seek to a different position.
  *
@@ -118,7 +112,7 @@ typedef int64_t (*mpv_stream_cb_read_fn)(void *cookie, char *buf, uint64_t nbyte
  * is used to test whether the stream is seekable (since seekability might
  * depend on the URI contents, not just the protocol). Return
  * MPV_ERROR_UNSUPPORTED if seeking is not implemented for this stream. This
- * seek also servies to establish the fact that streams start at position 0.
+ * seek also serves to establish the fact that streams start at position 0.
  *
  * This callback can be NULL, in which it behaves as if always returning
  * MPV_ERROR_UNSUPPORTED.
@@ -154,6 +148,22 @@ typedef int64_t (*mpv_stream_cb_size_fn)(void *cookie);
 typedef void (*mpv_stream_cb_close_fn)(void *cookie);
 
 /**
+ * Cancel callback used to implement a custom stream.
+ *
+ * This callback is used to interrupt any current or future read and seek
+ * operations. It will be called from a separate thread than the demux
+ * thread, and should not block.
+ *
+ * This callback can be NULL.
+ *
+ * Available since API 1.106.
+ *
+ * @param cookie opaque cookie identifying the stream,
+ *               returned from mpv_stream_cb_open_fn
+ */
+typedef void (*mpv_stream_cb_cancel_fn)(void *cookie);
+
+/**
  * See mpv_stream_cb_open_ro_fn callback.
  */
 typedef struct mpv_stream_cb_info {
@@ -176,6 +186,7 @@ typedef struct mpv_stream_cb_info {
     mpv_stream_cb_seek_fn seek_fn;
     mpv_stream_cb_size_fn size_fn;
     mpv_stream_cb_close_fn close_fn;
+    mpv_stream_cb_cancel_fn cancel_fn; /* since API 1.106 */
 } mpv_stream_cb_info;
 
 /**

@@ -1,9 +1,12 @@
+mpv_abort_async_command
 mpv_client_api_version
+mpv_client_id
 mpv_client_name
 mpv_command
 mpv_command_async
 mpv_command_node
 mpv_command_node_async
+mpv_command_ret
 mpv_command_string
 mpv_create
 mpv_create_client
@@ -11,6 +14,7 @@ mpv_create_weak_client
 mpv_destroy
 mpv_detach_destroy
 mpv_error_string
+mpv_event_to_node
 mpv_event_name
 mpv_free
 mpv_free_node_contents
